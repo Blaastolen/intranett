@@ -1,0 +1,65 @@
+- Tasks can be revoked (have a timeout), but to keep them revoked there
+  needs to be a persistent state for the worker daemons. CELERY_STATE_DB or
+  --statedb CL argument.
+
+- Responses will clog up the queues unless you state you are going to ignore
+  the response, or if RabbitMQ has been configured to discard them after
+  a timeout. Use CELERY_AMQP_TASK_RESULT_EXPIRES. We could also look into
+  CELERY_IGNORE_RESULT or set ignore_result on the tasks explicitly. To get
+  errors anyway we can set CELERY_STORE_ERRORS_EVEN_IF_IGNORED on the workers.
+
+- Revoked tasks may also be dropped through the RabbitMQ timeout discard?
+
+- Tasks can be time limited (but I think socket timeouts are a better idea).
+  Still, this is interesting for the portal_transforms case (Word-to-text has
+  been known to hang indefinitely). There is both a hard limit (kill) and a
+  soft limit (raise exeption, can be caught to clean up).
+
+- Celery can be configured to restart after x tasks, to guard against memory
+  leaks! :-) CELERY_MAX_TASKS_PER_CHILD
+
+- I don't think we'll need rate limiting, so disable it completely to save 
+  the overhead. CELERY_DISABLE_RATE_LIMITS.
+  
+- If we are using sessions with an expiration, we need to configure celery to
+  also expire it's messages. Each task has an expires configuration option.
+
+- Celery / Kombu supports message compression, off by default.
+
+- I think we must disable the Celery root logger hijacking when integrating
+  into Zope. Look into CELERYD_HIJACK_ROOT_LOGGER.
+
+- Supervisord examples for celery:
+  https://github.com/ask/celery/tree/master/contrib/supervisord/
+
+- The rabbitmq recipe is set up to read a bash config from etc/rabbitmq.conf
+  to override many settings. See the bin/rabbitmq-server script.
+
+- The recipe also defaults to NODENAME=rabbit@localhost. I strongly suspect
+  that'll conflict with a clustering setup. Andreas Jung made that change
+  (from the default NODENAME=rabbit) to make the persistent database moveable
+  between servers, but I have my doubts that's chance we want to retain.
+  Easy to override: put NODENAME=rabbit in etc/rabbitmq.conf.
+
+- To configure RabbitMQ clustering, put your erlang config for that into
+  etc/rabbitmq_cluster.config and read up on the subject at
+  http://www.rabbitmq.com/clustering.html
+
+Generic Plone integration (plone.app.celery) ideas:
+
+- There is a celery.signals module, that provides the same functionality as
+  zope events. Perhaps register a handler that emits Zope events to shadow
+  these? Interesting only for the task_sent signal, really.
+
+- Celery supports thread-local instances of the app object. Should we create
+  a celery app instance for each zope thread. This gives us an excellent
+  configuration load hook as well. Perhaps not, see the note below.
+
+- The plone.app.celery should provide it's own publisher. Having our
+  own publisher means we get to keep the connection to rabbitmq open, and to
+  use transaction semantics on the publisher channel. Use a subclass of 
+  celery.app.amqp.PublisherPool to provide the connections and publishers.
+
+- We need to clearly document that under Plone, a transactional publisher is
+  used, and to use a different publisher without transactions is needed if
+  you want to send messages before Zope commit.
