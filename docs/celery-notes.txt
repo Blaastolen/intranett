@@ -32,19 +32,6 @@
 - Supervisord examples for celery:
   https://github.com/ask/celery/tree/master/contrib/supervisord/
 
-- The rabbitmq recipe is set up to read a bash config from etc/rabbitmq.conf
-  to override many settings. See the bin/rabbitmq-server script.
-
-- The recipe also defaults to NODENAME=rabbit@localhost. I strongly suspect
-  that'll conflict with a clustering setup. Andreas Jung made that change
-  (from the default NODENAME=rabbit) to make the persistent database moveable
-  between servers, but I have my doubts that's chance we want to retain.
-  Easy to override: put NODENAME=rabbit in etc/rabbitmq.conf.
-
-- To configure RabbitMQ clustering, put your erlang config for that into
-  etc/rabbitmq_cluster.config and read up on the subject at
-  http://www.rabbitmq.com/clustering.html
-
 Generic Plone integration (plone.app.celery) ideas:
 
 - There is a celery.signals module, that provides the same functionality as
