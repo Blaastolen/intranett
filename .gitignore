@@ -8,6 +8,8 @@ etc/haproxy.cfg
 etc/logrotate.conf
 etc/munin-node.conf
 etc/plugins/
+etc/rabbitmq.conf
+etc/rabbitmq-env.conf
 etc/supervisord.conf
 etc/varnish.vcl
 include
