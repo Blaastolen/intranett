@@ -213,9 +213,124 @@ def various(context):
     restrict_siteadmin(site)
 
 
-@import_step()
 def content(context):
     if context.readDataFile('intranett-policy-content.txt') is None:
         return
     site = context.getSite()
     setup_default_content(site)
+
+
+import logging
+
+from plone.app.upgrade.v40.alphas import migrateFolders
+from plone.app.upgrade.v40.alphas import updateLargeFolderType
+from plone.app.upgrade.v40.betas import convertToBlobs
+
+from Products.CMFPlone.utils import base_hasattr
+from Products.CMFPlone.utils import safe_callable
+from Products.Archetypes.utils import getRelURL
+from Products.Archetypes.ReferenceEngine import Reference
+from Products.ATContentTypes.criteria.base import ATBaseCriterion
+
+logger = logging.getLogger('karmoy.contentimport')
+
+
+def fixOwnership(portal):
+    """Repair owner tuples to contain the right user folder path.
+    """
+    logger.info('Fixing executable ownership...')
+
+    def fixOwnerTuple(obj, path):
+        old = obj.getOwnerTuple()
+        if old:
+            if old[1] in ('admin', 'jarn', 'manager', 'redpilladmin', 'tog'):
+                if old[0] != ['acl_users']:
+                    new = (['acl_users'], old[1])
+                    logger.info('Fixing %s %r -> %r', path, old, new)
+                    obj._owner = new
+            else:
+                if old[0] != ['Plone', 'acl_users']:
+                    new = (['Plone', 'acl_users'], old[1])
+                    logger.info('Fixing %s %r -> %r', path, old, new)
+                    obj._owner = new
+
+    portal.ZopeFindAndApply(portal, search_sub=True, apply_func=fixOwnerTuple)
+
+
+def rebuildPortalCatalog(portal):
+    """Empties catalog, then finds all contentish objects (i.e. objects
+       with an indexObject method), and reindexes them.
+       This may take a long time.
+    """
+    logger.info('Rebuilding portal catalog...')
+    portal.portal_catalog.clearFindAndRebuild()
+
+
+def rebuildUIDCatalog(portal):
+    logger.info('Rebuilding UID catalog...')
+
+    def indexObject(obj, path):
+        if (base_hasattr(obj, 'indexObject') and
+            safe_callable(obj.indexObject)):
+
+            if isinstance(obj, ATBaseCriterion): return
+            url = getRelURL(portal, obj.getPhysicalPath())
+            portal.uid_catalog.catalog_object(obj, url)
+
+    portal.uid_catalog.manage_catalogClear()
+    portal.ZopeFindAndApply(portal, search_sub=True, apply_func=indexObject)
+
+
+def rebuildRefCatalog(portal):
+    logger.info('Rebuilding reference catalog...')
+    portal.reference_catalog.manage_catalogClear()
+    brains = portal.portal_catalog.unrestrictedSearchResults()
+    for brain in brains:
+        obj = brain.getObject()
+        if base_hasattr(obj, 'at_references'):
+            for ref in obj.at_references.objectValues():
+                if not isinstance(ref, Reference):
+                    continue
+                url = getRelURL(portal, ref.getPhysicalPath())
+                portal.reference_catalog.catalog_object(ref, url)
+
+
+def importZexp(context, zexp_name, set_owner=True):
+    """Import zexp file into context."""
+    logger.info('Importing %s...', zexp_name)
+    if zexp_name in context:
+        context.manage_delObjects(zexp_name)
+    zexp_file = zexp_name + '.zexp'
+    context.manage_importObject(zexp_file, set_owner=set_owner)
+
+@import_step()
+def importContent(context):
+    """Import old Karmoy content
+    """
+    if context.readDataFile('intranett-policy-contentimport.txt') is None:
+        return
+    portal = context.getSite()
+
+    zexps = ('source_users',)
+    for zexp_name in zexps:
+        importZexp(portal.acl_users, zexp_name)
+    #'portal_memberdata',
+    zexps = ('avdelinger', 'sandkasse', 'bilder', 'hurtiglenker', 
+             'studietur-til-voss-kulturhus-med-bibliotek', 'kalender', 
+             'telefonliste', 'news', 'vaktlister', 'personal-og-hms', 
+             'vekeplan-for-moterom', 'prosjekter', 'viktig-informasjon',)
+    for zexp_name in zexps:
+        importZexp(portal, zexp_name)
+
+    migrateFolders(portal)
+    rebuildPortalCatalog(portal)
+    updateLargeFolderType(portal)
+    fixOwnership(portal)
+    rebuildPortalCatalog(portal)
+    rebuildUIDCatalog(portal)
+    rebuildRefCatalog(portal)
+    convertToBlobs(portal)
+
+    logger.info('done')
+
+
