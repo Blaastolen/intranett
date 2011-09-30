@@ -1,0 +1,130 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      i18n:domain="intranett"
+      metal:use-macro="here/main_template/macros/master">
+<head>
+    <metal:cssslot fill-slot="css_slot">
+    <style type="text/css"
+           media="all"
+           tal:content="structure string:&lt;!-- @import url($portal_url/jscalendar/calendar-system.css); --&gt;">
+    </style>
+    </metal:cssslot>
+
+    <metal:javascriptslot fill-slot="javascript_head_slot">
+    <script src="jscalendar/calendar_stripped.js" charset="iso-8859-1" type="text/javascript"
+            tal:attributes="src string:$portal_url/jscalendar/calendar_stripped.js">
+    </script>
+
+    <script src="jscalendar/calendar-en.js" charset="iso-8859-1" type="text/javascript"
+            tal:attributes="src string:$portal_url/jscalendar/calendar-en.js">
+    </script>
+    </metal:javascriptslot>
+</head>
+
+<body>
+  <div metal:fill-slot="main">
+  <tal:main-macro metal:define-macro="main">
+
+  <a class="link-parent"
+     tal:attributes="href string:${view/context/absolute_url}/view"
+     i18n:translate="">
+    Back to
+    <span tal:replace="view/context/Title" i18n:name="title" />
+  </a>
+
+  <h2 i18n:translate=""
+      tal:condition="not:view/has_items">
+      There are no tasks defined for
+      <em tal:content="view/context/Title" i18n:name="title" />
+      
+  </h2>
+
+  <fieldset tal:condition="view/has_items">
+   <legend i18n:translate="">Tasks for
+     <em tal:content="view/context/Title" i18n:name="title" />
+   </legend>
+
+  <table class="listing" tal:condition="view/has_items">
+    <thead>
+      <tr>
+        <th i18n:translate="">Due date</th>
+        <th i18n:translate="">Task</th>
+        <th i18n:translate="">Assigned to</th>
+        <th i18n:translate="">Done</th>
+        <th i18n:translate="">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tal:items repeat="item view/view_items">
+      <tr>
+        <td tal:content="item/due_date"></td>
+        <td tal:content="item/description"></td>
+        <td tal:content="item/assigned_to"></td>
+        <td>
+          <input type="checkbox" name="task_ids:list"
+                 tal:attributes="value item/id;
+                                 checked python: item['done'] and 'checked'"
+                 disabled="disabled"/>
+        </td>
+        <td>
+          <a href="#"
+             tal:attributes="href item/view_url"
+             i18n:translate="">
+             Details
+          </a>
+        </td>
+      </tr>
+      </tal:items>
+    </tbody>
+  </table>
+</fieldset>
+  <fieldset tal:condition="view/can_add_task">
+  <legend i18n:translate="">Create a new task for
+    <em tal:content="view/context/Title" i18n:name="title"/>
+  </legend>
+  
+  <form action="" method="post"
+        tal:attributes="action view/add_url">
+    <div class="field">
+        <label for="" i18n:translate="">Assigned to</label>
+      <br />
+      <select name="assigned_to">
+        <option value="" i18n:translate="task_add_choose_user">select person</option>
+            <tal:block tal:repeat="user view/listUsers">
+                    <option tal:attributes="value user/id"
+                            tal:content="user/name"/>
+            </tal:block>
+      </select>
+    </div>
+    <div class="field">
+      <label for="" i18n:translate="">Description</label>
+      <br />
+      <textarea rows="10" name="description"></textarea>
+    </div>
+    <div class="field"
+         tal:define="uniqueItemIndex view/uniqueItemIndex;
+                     formname string:add-task-form;
+                     inputname string:due_date;
+                     inputvalue view/current_date;
+                     show_hm python:False;
+                     show_jscal python:True">
+      <label for="" i18n:translate="">Due date</label>
+      <br />
+      <metal:widget use-macro="here/calendar_macros/macros/calendarDatePickerBox" />
+    </div>
+    <div class="formControls">
+      <input class="context" type="submit" name="submit"
+             value="Submit"
+             alt="Submit"
+             i18n:domain="plone"
+             i18n:attributes="value label_submit;
+                              alt label_submit;" />
+    </div>
+  </form>
+  </fieldset>
+
+  </tal:main-macro>
+  </div>
+</body>
+
+</html>

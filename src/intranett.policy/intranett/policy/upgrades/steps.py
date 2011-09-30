@@ -436,6 +436,7 @@ def install_quickupload(context):
 
 @upgrade_to(42)
 def install_amberjack(context):
+    loadMigrationProfile(context, 'profile-intranett.task:default')
     loadMigrationProfile(context, 'profile-intranett.tour:default')
     loadMigrationProfile(context, 'profile-intranett.policy:default',
         steps=('cssregistry', 'jsregistry', ))

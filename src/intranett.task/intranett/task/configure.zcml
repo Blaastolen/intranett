@@ -1,0 +1,28 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="intranett.task">
+
+    <five:registerPackage package="." />
+
+    <include file="permissions.zcml" />
+
+    <include package=".portlets" />
+    <include package=".browser" />
+
+    <genericsetup:registerProfile
+        name="default"
+        title="Intrnaett Task Manager"
+        description="Intranett Task Manager configuration"
+        directory="profiles/default"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+    <subscriber
+        for="Products.Archetypes.interfaces.IBaseObject
+             OFS.interfaces.IObjectWillBeRemovedEvent"
+        handler=".handlers.remove_tasks_on_content"
+        />
+
+</configure>

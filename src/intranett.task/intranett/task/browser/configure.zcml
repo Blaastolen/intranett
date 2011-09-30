@@ -1,0 +1,94 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="intranett.taskmanager">
+
+    <!-- Form actions -->
+    <browser:page
+        for="*"
+        name="add-task"
+        class=".tasks.AddTaskAction"
+        permission="intranett.task.AssignTasksToUsers"
+        />
+
+    <browser:page
+        for="*"
+        name="edit-task"
+        class=".tasks.EditTaskAction"
+        permission="intranett.task.AssignTasksToUsers"
+        />
+
+    <browser:page
+        for="*"
+        name="delete-tasks"
+        class=".tasks.DeleteTasksAction"
+        permission="intranett.task.AssignTasksToUsers"
+        />
+
+    <browser:page
+        for="*"
+        name="delete-task"
+        class=".tasks.DeleteTaskAction"
+        permission="intranett.task.AssignTasksToUsers"
+        />
+
+    <browser:page
+        for="*"
+        name="edit-assigned-tasks"
+        class=".tasks.EditAssignedTasksAction"
+        permission="intranett.task.AssignTasksToUsers"
+        />
+
+    <browser:page
+        for="*"
+        name="add-task-message"
+        class=".tasks.AddTaskMessageAction"
+        permission="zope2.View"
+        />
+
+    <!-- Task views     -->
+    <browser:page
+        for="*"
+        name="content-tasks"
+        class=".contenttasks.ContentTasksView"
+        template="contenttasks.pt"
+        allowed_interface=".contenttasks.IContentTasksView"
+        permission="cmf.ModifyPortalContent"
+        />
+
+    <browser:page
+        for="*"
+        name="task-list"
+        class=".tasklist.TaskListView"
+        allowed_interface=".tasklist.ITaskListView"
+        template="tasklist.pt"
+        permission="zope2.View"
+        />
+
+
+    <browser:page
+        for="*"
+        name="task-view"
+        class=".taskview.TaskView"
+        template="taskview.pt"
+        allowed_interface=".taskview.ITaskView"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        for="*"
+        name="mark-as-done"
+        class=".tasks.MarkAsDone"
+        permission="zope2.View"
+        />
+
+    <browser:viewlet
+        name="intranett.task.info"
+        for="*"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        class=".viewlets.TaskInfoViewlet"
+        layer="intranett.theme.browser.interfaces.IThemeSpecific"
+        permission="zope2.View"
+        />
+
+</configure>

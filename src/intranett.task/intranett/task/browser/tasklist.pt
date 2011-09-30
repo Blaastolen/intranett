@@ -1,0 +1,222 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      i18n:domain="intranett"
+      metal:use-macro="here/main_template/macros/master">
+
+<metal:block fill-slot="top_slot"
+             tal:define="dummy python:request.set('disable_border',1)" />
+
+<body>
+  <div metal:fill-slot="main">
+  <tal:main-macro metal:define-macro="main"
+                  tal:define="assigned_items view/assigned_items;
+                              created_items view/created_items;
+                              is_batch_editing view/is_batch_editing">
+
+  <fieldset>
+  <legend i18n:translate="">My tasks</legend>
+
+  <form action="" method="post"
+        tal:condition="assigned_items"
+        tal:attributes="action view/mark_as_done_url">
+  <table class="listing"
+         tal:condition="assigned_items">
+    <thead>
+      <tr>
+        <th class="nosort">
+          <input class="noborder"
+                  type="checkbox"
+                  src="select_all_icon.gif"
+                  name="selectButton"
+                  title="Select all items"
+                  onClick="toggleSelect(this, 'task_ids:list');"
+                  tal:attributes="src string:$portal_url/select_all_icon.gif"
+                  alt="Select all items"
+                  i18n:domain="plone"
+                  i18n:attributes="title label_select_all_items; alt label_select_all_items;"/>
+
+        </th>
+        <th i18n:translate="">Due date</th>
+        <th i18n:translate="">Task</th>
+        <th i18n:translate="">Message</th>
+        <th i18n:translate="">Item</th>
+        <th i18n:translate="">Created by</th>
+        <th i18n:translate="">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tal:items repeat="item assigned_items">
+      <tr>
+        <td>
+          <input type="checkbox" name="task_ids:list"
+                 tal:attributes="value item/tid;"
+                 tal:condition="python: item['done']==False" />
+          <input type="checkbox" name="task_ids:list"
+                 tal:attributes="value item/tid"
+                 tal:condition="python: item['done']==True"
+                 checked=""  disabled="" />
+        </td>
+        <td tal:content="item/due_date"></td>
+        <td>
+          <a tal:condition="item/content_url"
+             tal:attributes="href string:${item/content_url}/view;
+                             title string:${item/content_url}"><span tal:content="python:item['description']"></span></a>
+        </td>
+        <td>
+          <a href="#"
+             tal:condition="python: item.get('talk') and item.get('view_url')"
+             tal:attributes="href item/view_url">
+              <img src="discussionitem_icon.gif" />
+          </a>
+        </td>
+        <td>
+          <a tal:condition="item/content_url"
+             tal:attributes="href string:${item/content_url}/view"><span tal:content="python:item['title']"></span></a>
+        </td>
+        <td tal:content="item/created_by"></td>
+        <td>
+          <a href="#"
+             tal:attributes="href item/view_url"
+             i18n:translate="">Details</a>
+        </td>
+      </tr>
+      </tal:items>
+    </tbody>
+  </table>
+  <input type="submit" class="context" value="Mark as done"
+         i18n:attributes="value" />
+  </form>
+
+  <p tal:condition="not: assigned_items" i18n:translate="">
+    You don't have any tasks assigned.
+  </p>
+
+</fieldset>
+
+  <fieldset tal:condition="created_items">
+  <legend i18n:translate="">Tasks you have assigned to others</legend>
+
+  <form action="" method="post"
+        tal:condition="created_items"
+        tal:attributes="action view/edit_tasks_url">
+  <table class="listing">
+    <thead>
+      <tr>
+        <th class="nosort"
+            tal:condition="not:is_batch_editing">
+          <input class="noborder"
+                  type="checkbox"
+                  src="select_all_icon.gif"
+                  name="selectButton"
+                  title="Select all items"
+                  onClick="toggleSelect(this, 'task_ids:list');"
+                  tal:attributes="src string:$portal_url/select_all_icon.gif"
+                  alt="Select all items"
+                  i18n:domain="plone"
+                  i18n:attributes="title label_select_all_items; alt label_select_all_items;"/>
+        </th>
+        <th i18n:translate="">Due date</th>
+        <th i18n:translate="">Task</th>
+        <th i18n:translate="">Message</th>
+        <th i18n:translate="">Item</th>
+        <th i18n:translate="">Assigned to</th>
+        <th i18n:translate="">Done</th>
+        <th i18n:translate="">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tal:items repeat="item created_items">
+      <tr>
+        <td tal:condition="not:is_batch_editing">
+          <input type="checkbox" name="task_ids:list"
+                 tal:attributes="value item/tid" />
+        </td>
+        <td tal:content="item/due_date"></td>
+        <td>
+          <a tal:condition="item/content_url"
+             tal:attributes="href string:${item/content_url}/view;
+                             title string:${item/content_url}/view"><span tal:content="python:item['description']"></span></a>
+        </td>
+        <td>
+          <a href="#"
+             tal:condition="item/talk"
+             tal:attributes="href item/view_url">
+              <img src="discussionitem_icon.gif" />
+          </a>
+        </td>
+        <td>
+          <a tal:condition="item/content_url"
+             tal:attributes="href string:${item/content_url}/view;
+                             title string:${item/content_url}/view"><span tal:content="python:item['title']"></span></a>
+        </td>
+        <td>
+          <span tal:replace="item/assigned_to"
+                tal:condition="not: is_batch_editing">User</span>
+
+          <input type="hidden" name="tasks.id:records"
+                 tal:attributes="value item/tid" />
+
+          <input type="hidden" name="tasks.old_assigned:records"
+                 tal:attributes="value item/assigned_to_user_id" />
+
+          <select name="tasks.assigned_to:records"
+                  tal:condition="is_batch_editing">
+            <option tal:attributes="value user/id;
+                                    selected python:user['id'] == item['assigned_to_user_id'] and 'selected'"
+                    tal:repeat="user view/listUsers"
+                    tal:content="user/name"/>
+          </select>
+        </td>
+        <td>
+          <input type="checkbox" name="task_ids:list"
+                 tal:attributes="value item/tid;"
+                 tal:condition="python: item['done']==False"
+                 disabled=""/>
+          <input type="checkbox" name="task_ids:list"
+                 tal:attributes="value item/tid"
+                 tal:condition="python: item['done']==True"
+                 checked=""  disabled="" />
+        </td>
+        <td>
+          <a href="#"
+             tal:attributes="href item/view_url"
+             i18n:translate="">Details</a>
+        </td>
+      </tr>
+      </tal:items>
+    </tbody>
+  </table>
+
+  <input type="submit" class="context" value="Delete" name="task_delete"
+         i18n:attributes="value"
+         tal:condition="not:is_batch_editing"/>
+
+  <input type="submit" class="context" value="Submit" name="task_edit"
+         i18n:attributes="value"
+         tal:condition="is_batch_editing" />
+
+  </form>
+
+  <div tal:define="base_url string:${here/absolute_url}/${view/__name__}">
+    <a href="#" class="plain"
+       tal:condition="not: view/is_batch_editing"
+       tal:attributes="href string:$base_url?batchedit=1"
+       i18n:translate="">
+          Batch edit task assignments
+    </a>
+    <a href="#" class="plain"
+       tal:condition="view/is_batch_editing"
+       tal:attributes="href base_url"
+       i18n:translate="">
+          Back to default view
+    </a>
+  </div>
+
+</fieldset>
+
+  </tal:main-macro>
+
+  </div>
+</body>
+
+</html>

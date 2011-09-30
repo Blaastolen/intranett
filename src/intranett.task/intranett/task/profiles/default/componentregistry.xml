@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<componentregistry>
+ <adapters/>
+ <utilities>
+  <utility 
+     interface="intranett.task.interfaces.ITaskManager"
+     factory="intranett.task.taskmanager.TaskManager"/>
+ </utilities>
+</componentregistry>

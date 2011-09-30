@@ -22,6 +22,7 @@
   <include package="Products.PloneFormGen" />
   <include package="intranett.theme" />
   <include package="intranett.tour" />
+  <include package="intranett.task" />
 
   <include package=".browser" />
   <include package=".subscribers" />

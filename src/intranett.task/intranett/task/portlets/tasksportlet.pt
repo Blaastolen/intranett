@@ -1,0 +1,25 @@
+<dl class="portlet portletTasks"
+    tal:condition="view/is_visible">
+
+    <dt class="portletHeader">
+        <span class="portletTopLeft"></span>
+          <span i18n:translate="" tal:omit-tag="">Tasks</span>
+        <span class="portletTopRight">
+          <a href="#"
+             i18n:translate=""
+             tal:attributes="href string:${here/absolute_url}/content-tasks"
+             tal:condition="view/can_add_task">Add task <img i18n:name="add_icon" tal:attributes="src string:${here/portal_url}/add_icon.gif" /></a>
+        </span>
+    </dt>
+
+    <tal:tasks repeat="task view/items">
+    <dd tal:define="oddrow repeat/task/odd;"
+        tal:attributes="class python:oddrow and 'portletItem even' or 'portletItem odd'">
+
+    <span tal:content="task/description" i18n:translate="">Description</span>
+      <a tal:attributes="href task/url"
+         i18n:translate="legend_details">more…</a>
+    </dd>
+    </tal:tasks>
+
+</dl>
