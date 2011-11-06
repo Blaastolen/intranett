@@ -25,6 +25,7 @@ etc/scgi_params.default
 etc/uwsgi_params
 etc/uwsgi_params.default
 etc/win-utf
+etc/mantrid.conf
 include
 lib
 nginx-sites/jarn.conf
