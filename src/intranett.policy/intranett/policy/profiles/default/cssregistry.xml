@@ -18,16 +18,6 @@
    rendering="link"
    authenticated="False" />
 
- <stylesheet id="++resource++jquery-ui-themes/sunburst/jqueryui.css"
-   insert-before="member.css"
-   rendering="link"
-   expression="" />
-
- <stylesheet id="++resource++jquery-ui-themes/sunburst-patch.css"
-   insert-before="member.css"
-   rendering="link"
-   expression="" />
-
  <stylesheet id="++resource++gritter/jquery.gritter.css"
    insert-before="member.css" />
 

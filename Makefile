@@ -2,8 +2,8 @@
 
 version = 2.7
 python = bin/python
-config = development.cfg
-buildout_options =
+config = nhn-dev.cfg
+buildout_options = 
 
 all: rebuild
 
