@@ -11,7 +11,6 @@
   <i18n:registerTranslations directory="locales" />
 
   <include package="Products.CMFPlone" />
-  <include package="collective.ATClamAV" />
   <include package="collective.quickupload" />
   <include package="five.pt" />
   <include package="iw.rejectanonymous" />
@@ -27,7 +26,6 @@
   <include package="Products.PloneInvite" />
   <include package="Products.PloneFormGen" />
   <include package="intranett.theme" />
-  <include package="intranett.tour" />
 
   <include package=".browser" />
   <include package=".subscribers" />

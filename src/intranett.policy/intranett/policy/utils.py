@@ -7,7 +7,6 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.PlonePAS.utils import cleanId
 from zope.component import queryUtility
 
-from intranett.policy.config import PERSONAL_FOLDER_ID
 from intranett.policy.interfaces import IMembersFolderId
 
 logger = logging.getLogger("intranett")
@@ -61,46 +60,9 @@ def quote_userid(user_id):
     return cleanId(user_id)
 
 
-def get_personal_folder(context):
-    portal = getToolByName(context, 'portal_url').getPortalObject()
-    return portal.get(PERSONAL_FOLDER_ID, None)
 
 
-def get_personal_folder_url(context, userid):
-    personal = get_personal_folder(context)
-    if personal is None: # pragma: no cover
-        return
-    folder_id = quote_userid(userid)
-    folder = personal.get(folder_id, None)
-    if folder is None:
-        return
-    return folder.absolute_url()
 
-
-def create_personal_folder(context, user_id):
-    personal = get_personal_folder(context)
-    if personal is None:
-        return
-    folder_id = quote_userid(user_id)
-    if folder_id not in personal:
-        # don't let the request interfere in the processForm call
-        request = aq_get(personal, 'REQUEST', None)
-        if request is not None:
-            fullname = get_fullname(context, user_id)
-            # if we create a new user ttw - the memberdata isn't yet set when
-            # we call this, take it directly from the request
-            if fullname == user_id:
-                fullname = request.form.get('form.fullname', fullname)
-            request.form['title'] = fullname
-        _createObjectByType('Folder', personal, id=folder_id, title=fullname)
-        folder = personal[folder_id]
-        folder.processForm() # Fire events
-        pu = getToolByName(personal, 'plone_utils')
-        pu.changeOwnershipOf(folder, (user_id, ))
-        folder.__ac_local_roles__ = None
-        folder.manage_setLocalRoles(user_id, ['Owner'])
-        folder.setCreators([user_id])
-        folder.reindexObject()
 
 
 # Make functions available to scripts

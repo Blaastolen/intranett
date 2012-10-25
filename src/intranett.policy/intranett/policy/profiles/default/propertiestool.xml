@@ -1,11 +1,5 @@
 <?xml version="1.0"?>
 <object name="portal_properties">
-  <object name="clamav_properties">
-   <property name="clamav_connection" type="string">net</property>
-   <property name="clamav_host" type="string" purge="False">jarn11.gocept.net</property>
-   <property name="clamav_port" type="string">3310</property>
-   <property name="clamav_timeout" type="int">120</property>
-  </object>
  <object name="quickupload_properties">
    <property name="use_flashupload" type="boolean">False</property>
    <property name="auto_upload" type="boolean">True</property>

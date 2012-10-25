@@ -169,7 +169,6 @@ def create_site_admin(app, args):
     reset = pt.requestReset(login)
 
     # change ownership of all content to new user and update dates to now
-    from intranett.policy.config import PERSONAL_FOLDER_ID
     from DateTime import DateTime
     user = member.getUser()
     userid = user.getId()
@@ -179,8 +178,6 @@ def create_site_admin(app, args):
     brains = catalog.unrestrictedSearchResults()
     for brain in brains:
         if brain.portal_type.startswith('Member'):
-            continue
-        if brain.getId == PERSONAL_FOLDER_ID:
             continue
         obj = brain.getObject()
         obj.setCreators(userid)
