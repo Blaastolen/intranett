@@ -10,8 +10,8 @@
 
 
 backend default {
-    .host = "${varnish-config:backend-host}";
-    .port = "${varnish-config:backend-port}";
+    .host = "127.0.0.1";
+    .port = "8080";
     .connect_timeout = 0.4s;
     .first_byte_timeout = 300s;
     .between_bytes_timeout = 60s;
@@ -20,7 +20,7 @@ backend default {
 acl purge {
     "localhost";
     "127.0.0.1";
-    "${varnish-config:backend-host}";
+    "188.94.218.173/30";
 }
 
 sub vcl_recv {

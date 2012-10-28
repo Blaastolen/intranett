@@ -9,6 +9,8 @@ from Acquisition import aq_get
 from zope.component import getUtility
 from zope.site.hooks import setHooks
 from zope.site.hooks import setSite
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 
 logger = logging.getLogger()
 
@@ -57,6 +59,10 @@ def create_site(app, args):
         help='Force creation of a site when one already exists.')
     parser.add_option('-r', '--rootpassword', default=None,
         help='Create a admin user in the Zope root with the given password.')
+    parser.add_option('-d', '--dbid', default=None,
+        help='Enter the database and host id for use with xmpp.')
+    parser.add_option('-p', '--dbpassword', default=None,
+        help='Enter the db-password for use with xmpp.')
     parser.add_option('-l', '--language', default='no',
         help='The language used in the new site. [default: "%default"]')
     (options, args) = parser.parse_args(args=args)
@@ -93,6 +99,16 @@ def create_site(app, args):
     from intranett.policy.browser.admin import AddIntranettSite
     addsite = AddIntranettSite(app, request)
     addsite()
+
+
+    if options.dbid:
+        registry = getUtility(IRegistry)
+        registry['jarn.xmpp.adminJID'] = "admin@%s.intranett.no"%options.dbid
+
+    if options.dbpassword:
+        registry = getUtility(IRegistry)
+        registry['jarn.xmpp.adminPassword'] = u"%s"%options.dbpassword
+
 
     # setup initial xmpp nodes
     from intranett.policy.setuphandlers import setup_xmpp
