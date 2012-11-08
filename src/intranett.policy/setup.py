@@ -68,6 +68,7 @@ setup(name='intranett.policy',
           'zope.component',
           'zope.interface',
           'collective.flowplayer',
+          'Products.PloneHotfix20121106',
           'intranett.theme',
       ],
       entry_points="""
