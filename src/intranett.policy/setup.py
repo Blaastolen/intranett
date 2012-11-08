@@ -67,6 +67,7 @@ setup(name='intranett.policy',
           'RelStorage',
           'zope.component',
           'zope.interface',
+          'collective.flowplayer',
           'intranett.theme',
       ],
       entry_points="""
