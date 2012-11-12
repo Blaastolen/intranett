@@ -104,6 +104,10 @@ def create_site(app, args):
     if options.dbid:
         registry = getUtility(IRegistry)
         registry['jarn.xmpp.adminJID'] = "admin@%s.chat.intranettlan"%options.dbid
+        registry['jarn.xmpp.xmppDomain'] = "%s.chat.intranettlan"%options.dbid
+        registry['jarn.xmpp.pubsubJID'] = "pubsub.%s.chat.intranettlan"%options.dbid
+        registry['jarn.xmpp.conferenceJID'] = "conference.%s.chat.intranettlan"%options.dbid
+        registry['jarn.xmpp.boshURL'] = "https://intranett.no/http-bind/"
 
     if options.dbpassword:
         registry = getUtility(IRegistry)
@@ -111,9 +115,9 @@ def create_site(app, args):
 
 
     # setup initial xmpp nodes
-    from intranett.policy.setuphandlers import setup_xmpp
-    existing = app.objectValues('Plone Site')
-    #zzz setup_xmpp(existing[0])
+from intranett.policy.setuphandlers import setup_xmpp
+existing = app.objectValues('Plone Site')
+setup_xmpp(existing[0])
 
     transaction.get().note('Added new Plone site.')
     transaction.get().commit()
