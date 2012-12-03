@@ -13,7 +13,7 @@ Hi,
 has invited you to join the intranet site <span
 i18n:name="hostname" tal:replace="options/hostname" />.
 
-<span i18n:name="mail_extra_text" tal:replace="options/mail_extra_text" />
+<span i18n:name="mail_extra_text" tal:replace="options/extra_mail_text" />
 
 Please accept this invitation by visiting:
 
