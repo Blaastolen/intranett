@@ -2,6 +2,7 @@ from email import message_from_string
 from email.Header import Header
 from urllib import quote
 
+
 from AccessControl import ModuleSecurityInfo
 from Acquisition import aq_get
 from DateTime import DateTime
@@ -9,7 +10,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.publisher.browser import BrowserView
-
+from plone.registry.interfaces import IRegistry
+from zope.component import getUtility
 
 class InvitationMail(BrowserView):
 
@@ -31,7 +33,14 @@ class InvitationMail(BrowserView):
 def sendInvitationMail(site, member, vars):
     request = aq_get(site, 'REQUEST')
     fullname = member.getProperty('fullname') or member.getId()
-    hostname = request.other['SERVER_URL']
+
+    if site.Title() != "intranett.no":
+        hostname = site.Title()
+    else:
+        hostname = request.other['SERVER_URL']
+
+    registry = getUtility(IRegistry)
+    extra_mail_text = registry.get('intranett.extra_mail_text',"")
     invite_to_address = vars['invite_to_address']
     invitecode = vars['invitecode']
     message = vars['message']
@@ -44,7 +53,7 @@ def sendInvitationMail(site, member, vars):
 
     mail_text = InvitationMail(site, request)(member=member,
         email=invite_to_address, sender_fullname=fullname, hostname=hostname,
-        message=message, expires=expires, accept_url=accept_url)
+        message=message, expires=expires, accept_url=accept_url, extra_mail_text=extra_mail_text)
     if isinstance(mail_text, unicode):
         mail_text = mail_text.encode('utf-8')
 

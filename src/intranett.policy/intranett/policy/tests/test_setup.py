@@ -134,7 +134,7 @@ class TestSiteSetup(IntranettTestCase):
 
     def test_content(self):
         # The members folder is always present
-        expected = set(['personal', 'users'])
+        expected = set(['users'])
         # This content is only created in tests
         test_content = set(['test-folder'])
         portal = self.layer['portal']
