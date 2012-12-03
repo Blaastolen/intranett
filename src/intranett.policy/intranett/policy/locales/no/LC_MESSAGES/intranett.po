@@ -271,8 +271,6 @@ msgstr ""
 "${accept_invitation}\n"
 "(Du må aktivere kontoen før ${expirationdate})\n"
 "\n"
-"Du kan finne hjelp og instruksjoner på http://hjelp.intranett.no/ om du skulle trenge det.\n"
-"\n"
 "Med vennlig hilsen intranett.no-teamet"
 
 #. Default: "Advanced Search…"
