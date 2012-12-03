@@ -167,4 +167,10 @@
     </field>
     <value>https://localhost:8080/http-bind/</value>
   </record>
+  <record name="intranett.extra_mail_text">
+    <field type="plone.registry.field.Text">
+      <title>Invitation extra text</title>
+    </field>
+  </record>
+
 </registry>
