@@ -14,7 +14,7 @@ has invited you to join the intranet site <span
 i18n:name="hostname" tal:replace="options/hostname" />.
 
 
-<div tal:condition="options/mail_extra_text" i18n:name="mail_extra_text" tal:content="options/mail_extra_text" ></div>
+<span i18n:name="mail_extra_text" tal:replace="options/mail_extra_text" />
 
 Please accept this invitation by visiting:
 
