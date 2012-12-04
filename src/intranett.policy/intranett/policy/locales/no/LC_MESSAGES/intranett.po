@@ -257,7 +257,6 @@ msgstr "For å legge til et nytt portrett, trykk \"Bla igjennom\" og velg et bil
 
 #. Default: "Hi, ${sender_fullname} has invited you to join the intranet site ${hostname}. ${extra_mail_text} Please accept this invitation by visiting: ${accept_invitation} (You must accept the invitation before ${expirationdate}) With kind regards, intranett.no-team"
 #: intranett.policy/intranett/policy/browser/templates/invitation-mail.pt:22
-#, fuzzy
 msgid "invitation-mail-body"
 msgstr ""
 "Velkommen,\n"
