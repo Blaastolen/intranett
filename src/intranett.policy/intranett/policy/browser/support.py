@@ -14,7 +14,7 @@ VIEWLET_TEXT = u"""
   if (typeof(Zenbox) !== "undefined") {
     Zenbox.init({
       dropboxID: "20021871",
-      url: "https://jarn.zendesk.com",
+      url: "https://blaastolen.zendesk.com",
       tabID: "support",
       hide_tab: true,
     });
