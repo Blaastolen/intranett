@@ -1,5 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
+from OFS.interfaces import IObjectWillBeRemovedEvent
+from Products.Archetypes.interfaces import IObjectInitializedEvent
 from borg.localrole.interfaces import ILocalRoleProvider
 from plone.indexer.decorator import indexer
 from Products.Archetypes import atapi
@@ -11,12 +13,17 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from zope.component import adapter
 from zope.component import adapts
 from zope.component import getUtility
 from zope.interface import implements
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 from zope.schema.interfaces import IVocabularyFactory
+from jarn.xmpp.core.interfaces import IAdminClient
+from jarn.xmpp.core.interfaces import IXMPPUsers
+from jarn.xmpp.core.interfaces import IPubSubStorage
+
 
 from intranett.policy import IntranettMessageFactory as _
 from intranett.policy.config import PROJECTNAME
@@ -69,7 +76,8 @@ class ProjectRoom(ATFolder):
         # We cannot use 'vocabulary_factory' on the field as this would
         # result in a login -> fullname DisplayList.
         return atapi.DisplayList(
-            (t.token, t.title) for t in self.participantsource)
+            (t.token, t.title) for t in self.participantsource)        
+
 
     security.declareProtected(ModifyPortalContent, 'setParticipants')
     def setParticipants(self, value):
@@ -79,6 +87,17 @@ class ProjectRoom(ATFolder):
         if user_id not in value and self.userInParticipantSource(user_id):
             value.append(user_id)
         value.sort()
+        old_value = self.getParticipants()
+        if not self.checkCreationFlag():
+            client = getUtility(IAdminClient)
+            xmpp_users = getUtility(IXMPPUsers)
+            for user in set(value) - set(old_value):
+                user_jid = xmpp_users.getUserJID(user)
+                client.subscribe('projectrooms/projectroom-%s'%self.getId(),user_jid)
+            for user in set(old_value) - set(value):
+                user_jid = xmpp_users.getUserJID(user)
+                client.pubsub.unsubscribe('projectroom-%s'%self.getId(),user_jid)
+
         self.Schema().getField('participants').set(self, value)
 
     security.declareProtected(View, 'getProjectRoom')
@@ -206,6 +225,44 @@ def removeOwnerPermissions(context, action):
                     if 'Owner' in roles:
                         roles.remove('Owner')
                         context.manage_permission(perm, roles, acquire=0)
+
+@adapter(IProjectRoom, IObjectWillBeRemovedEvent)
+def deletePubSubNode(ob, event):
+    client = getUtility(IAdminClient)
+    client.deleteNode('projectroom-%s'%ob.getId())
+
+@adapter(IProjectRoom, IObjectInitializedEvent)
+def createPubSubNode(ob, event):
+    client = getUtility(IAdminClient)
+    xmpp_users = getUtility(IXMPPUsers)
+    storage = getUtility(IPubSubStorage)
+    USER_NODE_CONFIG = {
+        'pubsub#collection': 'projectrooms',
+        'pubsub#max_items': 1000
+    }
+
+    def createCollections(result):
+        if not result:
+            return False
+        d = client.createNode('projectrooms',
+            options={'pubsub#node_title': 'All projectroom nodes',
+                     'pubsub#node_type': 'collection',
+                     'pubsub#collection': '',
+                     'pubsub#max_items': 1000})
+        return d
+
+    #from jarn.xmpp.core.utils.pubsub import getAllChildNodes
+    #d = getAllChildNodes(client, None)
+    #d.addCallback(createCollections)
+    client.createNode('projectroom-%s'%ob.getId(),USER_NODE_CONFIG)
+    storage.leaf_nodes.append('projectroom-%s'%ob.getId())
+    storage.node_items['projectroom-%s'%ob.getId()] = []
+    storage.collections['projectrooms'] = []
+    storage.collections['projectrooms'].append('projectroom-%s'%ob.getId())
+    for user in ob.getParticipants():
+        user_jid = xmpp_users.getUserJID(user)
+        client.subscribe('projectrooms/projectroom-%s'%ob.getId(),user_jid)
+        import pdb; pdb.set_trace()
 
 
 def becomeOwner(context):

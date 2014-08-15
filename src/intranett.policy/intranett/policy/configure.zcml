@@ -56,6 +56,10 @@
   <subscriber handler=".content.membersfolder.unregisterMembersFolderId" />
   <subscriber handler=".content.membersfolder.updateMembersFolderId" />
 
+
+  <subscriber handler=".content.projectroom.createPubSubNode" />
+  <subscriber handler=".content.projectroom.deletePubSubNode" />
+
   <!-- Members should be able to add portlets to their own dashboard -->
   <browser:view
     for="plone.app.portlets.interfaces.IUserPortletAssignmentMapping"
