@@ -103,7 +103,7 @@ def create_site(app, args):
 
     if options.dbid:
         registry = getUtility(IRegistry)
-        registry['jarn.xmpp.adminJID'] = "admin@%s.chat.intranettlan"%options.dbid
+        registry['jarn.xmpp.adminJID'] = "admin%s@%s.chat.intranettlan"%(options.dbid, options.dbid)
         registry['jarn.xmpp.xmppDomain'] = "%s.chat.intranettlan"%options.dbid
         registry['jarn.xmpp.pubsubJID'] = "pubsub.%s.chat.intranettlan"%options.dbid
         registry['jarn.xmpp.conferenceJID'] = "conference.%s.chat.intranettlan"%options.dbid
