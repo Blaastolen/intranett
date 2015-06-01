@@ -2260,7 +2260,7 @@ form[name="users_search"] table.listing a > img {
   }
 
   #dashboard-portlets1,
-  #dashboard-portlets2, 
+  #dashboard-portlets2,
   #dashboard-portlets3,
   #main-board > div:nth-child(2),
   #main-board > div:nth-child(3),
@@ -2301,13 +2301,16 @@ form[name="users_search"] table.listing a > img {
 
   body.openburger #portal-searchbox{
     display: block;
+    float: none;
   }
   body.openburger > header nav{
     display: table;
+    margin-bottom: .25em;
   }
 
   .contentAlignment{
     padding: 0 .25em;
+    width: 100%;
   }
   .breadCrumb {
       width: 100%;
