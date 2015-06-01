@@ -126,4 +126,11 @@
             return false;
         });
     });
+    $(document).ready(function() {
+      $('<div id="hamburger"><div></div><div></div><div></div></div>').insertBefore('#portal-searchbox');
+      $('#hamburger').click(function() {
+        $('body').toggleClass('openburger');
+      });
+    });
+
 }(jQuery));
