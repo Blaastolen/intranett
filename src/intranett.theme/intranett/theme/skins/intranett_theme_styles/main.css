@@ -2205,6 +2205,116 @@ form[name="users_search"] table.listing a > img {
   width: auto; }
 
 /* @end */
+
+
+#hamburger {
+    border: 1px solid #888;
+    border-radius: 3px 3px 3px 3px;
+    cursor: pointer;
+    display: block;
+    height: 24px;
+    padding: 3px 4px 3px;
+    margin: 16px;
+    position: relative;
+    float: right;
+    width: 25px;
+    background-color: #555;
+    display: none;
+}
+#hamburger div {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 2px 2px 2px 2px;
+    height: 2px;
+    margin-top: 3px;
+    width: 90%;
+}
+
+
+@media all and (max-width: 768px) {
+  body > header nav li {
+      display: block;
+      height: 2em;
+    }
+
+
+    body > header nav li  a{
+       display: static;
+       border: 1px solid #888 !important;
+       background-color: #555;
+       border-top: none;
+       height: auto;
+   }
+
+   body > header nav li  a .toolTipArrow{
+     display: none;
+   }
+
+  #hamburger{
+    display: block;
+  }
+
+  #main-board,
+  #secondary-board{
+    width: 100% !important;
+  }
+
+  #dashboard-portlets1,
+  #dashboard-portlets2, 
+  #dashboard-portlets3,
+  #main-board > div:nth-child(2),
+  #main-board > div:nth-child(3),
+  #main-board > div:nth-child(4),
+  #secondary-board > div,
+  #main-board > div{
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  body > header nav li:first-child a {
+      border-left: 1px solid #888;
+  }
+  body > header nav li.selected a {
+      background: #000;
+      text-shadow: none;
+      position: staic;
+  }
+
+
+  .cell{
+    width: 100%;
+    float: none;
+    position: static;
+    margin: 0 !important;
+  }
+  #portal-columns{
+    border-top: none;
+  }
+  body > header > .contentAlignment{
+    background: none;
+  }
+  #portal-searchbox,
+  body > header nav{
+    display: none;
+    }
+
+  body.openburger #portal-searchbox{
+    display: block;
+  }
+  body.openburger > header nav{
+    display: table;
+  }
+
+  .contentAlignment{
+    padding: 0 .25em;
+  }
+  .breadCrumb {
+      width: 100%;
+  }
+}
+
+
 @media print {
   /* @group Print styles */
   body > header,

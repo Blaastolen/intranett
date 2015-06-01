@@ -32,6 +32,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <metal:baseslot define-slot="base"
   ><base tal:attributes="href plone_view/renderBase" /><!--[if lt IE 7]></base><![endif]-->
   </metal:baseslot>
