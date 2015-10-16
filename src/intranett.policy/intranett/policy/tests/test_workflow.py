@@ -33,7 +33,8 @@ class TestWorkflowSetup(IntranettTestCase):
             'FormMailerAdapter', 'FormMultiSelectionField',
             'FormPasswordField', 'FormRichLabelField', 'FormRichTextField',
             'FormSaveDataAdapter', 'FormSelectionField', 'FormStringField',
-            'FormTextField', 'FormThanksPage', 'Plone Site',
+            'FormTextField', 'FormThanksPage', 'Plone Site', 'FieldsetEnd',
+            'FieldsetStart',
         ])
         for type_ in no_workflow:
             wf = wftool.getChainForPortalType(type_)

@@ -20,4 +20,7 @@ class HiddenProducts(object):
             'Products.CMFPlacefulWorkflow',
             'Products.kupu',
             'Products.Marshall',
+            'plone.app.theming',
+            'plone.resource',
+            'collective.z3cform.datetimewidget',
         ]

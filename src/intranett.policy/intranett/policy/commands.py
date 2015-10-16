@@ -65,6 +65,9 @@ def create_site(app, args):
         help='Enter the db-password for use with xmpp.')
     parser.add_option('-l', '--language', default='no',
         help='The language used in the new site. [default: "%default"]')
+    parser.add_option('-c', '--command', default='no',
+        help='Command. [default: "%default"]')
+
     (options, args) = parser.parse_args(args=args)
 
     if options.rootpassword:

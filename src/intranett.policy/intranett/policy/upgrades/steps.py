@@ -17,3 +17,8 @@ def install_xmpp(context):
     loadMigrationProfile(context, 'profile-intranett.theme:default',
         steps=('viewlets', ))
     setup_xmpp(context)
+
+@upgrade_to(48)
+def install_xmpp(context):
+    loadMigrationProfile(context, 'profile-intranett.policy:default',
+        steps=('jsregistry'))

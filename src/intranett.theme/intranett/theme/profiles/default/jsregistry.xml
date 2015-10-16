@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts">
- <javascript id="selectivizr.js" 
+ <javascript id="selectivizr.js"
              conditionalcomment="lt IE 9"
-             insert-before="tiny_mce.js"
+             insert-before="jquery.tinymce.js"
              compression="none" />
  <javascript id="modernizr.js" compression="none" />
  <javascript id="jquery.easing.js" />
+ <javascript id="jquery.tinymce.js" authenticated="False" />
+ <javascript id="tiny_mce_gzip.js" authenticated="False"  />
  <javascript id="jquery.jBreadCrumb.js" />
  <javascript id="main.js" />
 </object>

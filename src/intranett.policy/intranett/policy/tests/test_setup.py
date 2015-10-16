@@ -45,11 +45,6 @@ class TestSiteSetup(IntranettTestCase):
         self.assert_(resources[1]._data['id'].startswith('acl_users'))
         self.assert_(resources[2]._data['id'].startswith('IEFixes'))
 
-    def test_kss_resources(self):
-        portal = self.layer['portal']
-        kss = getToolByName(portal, 'portal_kss')
-        self.assertEqual(len(kss.getEvaluatedResources(portal)), 1)
-
     def test_js_resources(self):
         portal = self.layer['portal']
         js = getToolByName(portal, 'portal_javascripts')
@@ -160,12 +155,6 @@ class TestSiteSetup(IntranettTestCase):
         # Make sure we have Monday
         self.assertEquals(calendar.firstweekday, 0)
 
-    def test_kss_disabled(self):
-        portal = self.layer['portal']
-        kss = getToolByName(portal, "portal_kss")
-        id_ = '++resource++plone.app.z3cform'
-        paz = kss.getResourcesDict()[id_]
-        self.assertEquals(paz.getEnabled(), False)
 
     def test_mail_setup(self):
         portal = self.layer['portal']
