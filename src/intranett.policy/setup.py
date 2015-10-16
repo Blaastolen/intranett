@@ -13,14 +13,14 @@ with open(changes, 'rU') as fd:
         lines.append(line)
 
 version = lines[-1].split('-')[0].strip()
-if 'unreleased' in lines[-1]:
-    proc = subprocess.Popen(['git', 'log', '-n 1', '--pretty="%h %ci"'],
-        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    proc.wait()
-    out = proc.stdout.read()
-    info = out.strip('\n"').split()
-    revision, date, time, tz = info
-    version += 'dev-' + revision + '-' + date
+#if 'unreleased' in lines[-1]:
+#    proc = subprocess.Popen(['git', 'log', '-n 1', '--pretty="%h %ci"'],
+#        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#    proc.wait()
+#    out = proc.stdout.read()
+#    info = out.strip('\n"').split()
+#    revision, date, time, tz = info
+#    version += 'dev-' + revision + '-' + date
 
 
 setup(name='intranett.policy',
