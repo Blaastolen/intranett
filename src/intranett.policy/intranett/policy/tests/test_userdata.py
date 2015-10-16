@@ -431,7 +431,9 @@ class TestFunctionalUserSearch(IntranettFunctionalTestCase):
         transaction.commit()
         browser.open(portal.absolute_url())
         browser.getControl(name='SearchableText').value = 'Bob'
-        browser.getForm(name='searchform').submit()
+        # bbb the searchform is called name=searchform in our jbot version of the template
+        # not sure why that is not picked up here
+        browser.getForm(id='searchGadget_form').submit()
         self.failUnless('Bob Døe' in browser.contents)
         self.failUnless('Øngønør' in browser.contents)
         self.failUnless('Tøst' in browser.contents)
@@ -677,5 +679,3 @@ class TestMembersFolder(IntranettTestCase):
         # Deleting members keeps persons active
         portal._delObject(folder.getId())
         self.assertEqual(getMembersFolderId(), 'persons')
-
-

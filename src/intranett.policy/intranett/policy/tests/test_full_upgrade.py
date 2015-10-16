@@ -25,7 +25,7 @@ class TestFullUpgrade(IntranettTestCase):
         portal = self.layer['portal']
         setup = getToolByName(portal, "portal_setup")
         setRoles(portal, TEST_USER_ID, ['Manager'])
-        setup.setLastVersionForProfile(config.policy_profile, '6')
+        setup.setLastVersionForProfile(config.policy_profile, '47')
         config.run_all_upgrades(setup)
         # There are no more upgrade steps available
         upgrades = setup.listUpgrades(config.policy_profile)

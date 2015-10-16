@@ -2,12 +2,6 @@ from plone.app.upgrade.utils import loadMigrationProfile
 from plutonian.gs import upgrade_to
 
 
-@upgrade_to(46)
-def remove_unused_workflows(context):
-    from intranett.policy.setuphandlers import remove_unused_workflows
-    remove_unused_workflows(context)
-
-
 @upgrade_to(47)
 def install_xmpp(context):
     from intranett.policy.setuphandlers import setup_xmpp
@@ -19,6 +13,7 @@ def install_xmpp(context):
     setup_xmpp(context)
 
 @upgrade_to(48)
-def install_xmpp(context):
+def plone_43(context):
+    loadMigrationProfile(context, 'profile-plone.app.theming:default')
     loadMigrationProfile(context, 'profile-intranett.policy:default',
-        steps=('jsregistry'))
+        steps=('jsregistry', 'factorytool'))

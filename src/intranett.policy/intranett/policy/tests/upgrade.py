@@ -80,13 +80,15 @@ class UpgradeTests(object):
 
         remaining = {}
         for n, v in files.items():
+            print n
+            print v
             if n not in expected_diff:
                 remaining[n] = v # pragma: no cover
 
         return remaining
 
     def test_upgrades(self):
-        self.importFile(__file__, 'fourtysix.zexp')
+        self.importFile(__file__, '413.zexp')
         portal = getattr(self.layer['app'], self.site_id)
 
         # TODO - we should do this in a layer
@@ -94,8 +96,6 @@ class UpgradeTests(object):
         setSite(portal)
         self.portal = portal
 
-        # Adjust for some things changed by the testing infrastructure
-        portal.setTitle('intranett.no')
 
         portal.portal_migration.upgrade(swallow_errors=False)
         setup = getToolByName(portal, "portal_setup")

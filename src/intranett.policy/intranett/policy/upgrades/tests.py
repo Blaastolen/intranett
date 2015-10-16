@@ -15,3 +15,7 @@ class TestUpgradeSteps(UpgradeTests, IntranettFunctionalTestCase):
         from jarn.xmpp.core.interfaces import IXMPPPasswordStorage
         pw_storage = queryUtility(IXMPPPasswordStorage)
         self.assertTrue(pw_storage is not None)
+
+    def after_48(self):
+        # tested by GS export diff
+        pass

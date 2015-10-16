@@ -27,17 +27,6 @@
     />
 
   <plone:portlet
-    name="intranett.policy.portlets.ContentHighlight"
-    interface=".contenthighlight.IContentHighlight"
-    assignment=".contenthighlight.Assignment"
-    view_permission="zope2.View"
-    edit_permission="plone.app.portlets.ManagePortlets"
-    renderer=".contenthighlight.Renderer"
-    addview=".contenthighlight.AddForm"
-    editview=".contenthighlight.EditForm"
-    />
-
-  <plone:portlet
     name="intranett.policy.portlets.ProjectRoomInfo"
     interface=".projectroominfo.IProjectRoomInfo"
     assignment=".projectroominfo.Assignment"

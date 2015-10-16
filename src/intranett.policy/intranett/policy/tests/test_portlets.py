@@ -8,7 +8,6 @@ from Products.CMFCore.utils import getToolByName
 import transaction
 from zope.component import getUtility, getMultiAdapter
 
-from intranett.policy.browser.portlets import contenthighlight
 from intranett.policy.browser.portlets import eventhighlight
 from intranett.policy.browser.portlets import newshighlight
 from intranett.policy.browser.portlets import projectroominfo
@@ -193,98 +192,6 @@ class TestEventHighlightPortlet(IntranettTestCase):
         self.assertIn(eventhighlight.Assignment, assignment_types)
 
 
-class TestContentHighlightPortlet(IntranettTestCase):
-
-    def renderer(self, context=None, request=None, view=None, manager=None,
-                 assignment=None):
-        context = context or self.layer['portal']
-        request = request or context.REQUEST
-        view = view or context.restrictedTraverse('@@plone')
-        manager = manager or getUtility(
-            IPortletManager, name='plone.rightcolumn', context=context)
-        assignment = assignment or contenthighlight.Assignment()
-        return getMultiAdapter((context, request, view, manager, assignment),
-                               IPortletRenderer)
-
-    def test_highighted_content(self):
-        portal = self.layer['portal']
-        setRoles(portal, TEST_USER_ID, ['Contributor'])
-        wt = getToolByName(portal, 'portal_workflow')
-        portal.invokeFactory('Document', 'highlighted',
-                             title='A highlighted document')
-        wt.doActionFor(portal['highlighted'], 'publish')
-
-        uid = portal['highlighted'].UID()
-        assignment = contenthighlight.Assignment(
-            portletTitle="Highlighted",
-            item=uid)
-        r = self.renderer(assignment=assignment)
-        r = r.__of__(portal)
-        r.update()
-
-        self.assertEqual(r.item().Title, 'A highlighted document')
-        output = r.render()
-        self.assertTrue('Highlighted' in output)
-        self.assertTrue('A highlighted document' in output)
-
-        # Let's use a non-existing item
-        assignment = contenthighlight.Assignment(
-            portletTitle="Highlighted",
-            item='i_do_not_exist')
-        r = self.renderer(assignment=assignment)
-        r = r.__of__(portal)
-        r.update()
-        self.assertEqual(r.item(), None)
-        output = r.render()
-        self.assertTrue('Highlighted' not in output)
-
-    def DISABLED_test_invoke_add_view(self):
-        portal = self.layer['portal']
-        setRoles(portal, TEST_USER_ID, ['Manager'])
-        portlet = getUtility(IPortletType,
-            name='intranett.policy.portlets.ContentHighlight')
-        mapping = portal.restrictedTraverse(
-            '++contextportlets++plone.rightcolumn')
-        addview = mapping.restrictedTraverse('+/' + portlet.addview)
-        initial = len(mapping)
-        addview.createAndAdd(
-            data={'portletTitle': 'Content Highlight', 'item': 'xxx'})
-        self.assertEquals(len(mapping), 1+initial)
-        assignment_types = set(assignment.__class__ for assignment in
-            mapping.values())
-        self.assertIn(contenthighlight.Assignment, assignment_types)
-
-    def test_document_source(self):
-        portal = self.layer['portal']
-        setRoles(portal, TEST_USER_ID, ['Contributor'])
-        wt = getToolByName(portal, 'portal_workflow')
-        portal.invokeFactory('Document', 'adoc',
-                             title='A document')
-        wt.doActionFor(portal['adoc'], 'publish')
-        uid = portal['adoc'].UID()
-        title = portal['adoc'].Title()
-
-        binder = DocumentSourceBinder()
-        query_source = binder(portal)
-        term = query_source.getTerm(uid)
-        self.assertEqual(term.value, uid)
-        self.assertEqual(term.token, title)
-        term = query_source.getTermByToken(title)
-        self.assertEqual(term.value, uid)
-        self.assertEqual(term.token, title)
-
-        search_result = query_source.search('a doc')
-        self.assertNotEqual(search_result, [])
-        term = search_result[0]
-        self.assertEqual(term.value, uid)
-        self.assertEqual(term.token, title)
-
-        # Containment
-        self.assertTrue(uid in query_source)
-        # Length
-        self.assertEqual(len(query_source), 1)
-        # Iterator
-        self.assertTrue(len([x for x in query_source]), 1)
 
 
 class TestProjectRoomStatePortlet(IntranettTestCase):
@@ -296,7 +203,6 @@ class TestProjectRoomStatePortlet(IntranettTestCase):
         view = view or context.restrictedTraverse('@@plone')
         manager = manager or getUtility(
             IPortletManager, name='plone.rightcolumn', context=context)
-        assignment = assignment or contenthighlight.Assignment()
         return getMultiAdapter((context, request, view, manager, assignment),
                                IPortletRenderer)
 
@@ -371,60 +277,3 @@ class TestProjectRoomStatePortlet(IntranettTestCase):
         self.assertFalse(r.available)
         output = r.render()
         self.assertEqual(output.strip(), "")
-
-
-class TestZ3cBase(IntranettFunctionalTestCase):
-
-    def test_add_edit_forms(self):
-        portal = self.layer['portal']
-        setRoles(portal, TEST_USER_ID, ['Manager'])
-        wt = getToolByName(portal, 'portal_workflow')
-        portal.invokeFactory('Document', 'adoc',
-                             title='A document')
-        wt.doActionFor(portal['adoc'], 'publish')
-        title = portal['adoc'].Title()
-        transaction.commit()
-        browser = get_browser(self.layer['app'], loggedIn=True)
-        url = portal.absolute_url() + \
-            '/++contextportlets++plone.leftcolumn/+/' + \
-            'intranett.policy.portlets.ContentHighlight'
-        # Missing input
-        browser.open(url)
-        browser.getControl(name='form.buttons.add').click()
-        self.assertEqual(browser.url, url)
-        self.assertTrue('Required input is missing.' in browser.contents)
-        # Add
-        browser.getControl(name='form.widgets.portletTitle').value = 'A title'
-        browser.getControl(
-            name="form.widgets.item.widgets.query").value = title
-        browser.getControl(name='form.buttons.add').click()
-        browser.getControl(name='form.widgets.item:list').value = [title]
-        browser.getControl(name='form.buttons.add').click()
-        self.assertEqual(browser.url, 'http://nohost/plone/@@manage-portlets')
-        # Cancel add
-        browser.open(url)
-        browser.getControl(name='form.buttons.cancel_add').click()
-        self.assertEqual(browser.url, 'http://nohost/plone/@@manage-portlets')
-
-        url = portal.absolute_url() + \
-            '/++contextportlets++plone.leftcolumn/' + \
-            'content-highlight/edit'
-        # Missing input
-        browser.open(url)
-        browser.getControl(name='form.widgets.portletTitle').value = ''
-        browser.getControl(name='form.buttons.apply').click()
-        self.assertEqual(browser.url, url)
-        self.assertTrue('Required input is missing.' in browser.contents)
-        # Edit without changes
-        browser.getControl(name='form.widgets.portletTitle').value = 'A title'
-        browser.getControl(name='form.buttons.apply').click()
-        self.assertEqual(browser.url, 'http://nohost/plone/@@manage-portlets')
-        # Edit with changes
-        browser.open(url)
-        browser.getControl(name='form.widgets.portletTitle').value = 'Title 2'
-        browser.getControl(name='form.buttons.apply').click()
-        self.assertEqual(browser.url, 'http://nohost/plone/@@manage-portlets')
-        # Cancel edit
-        browser.open(url)
-        browser.getControl(name='form.buttons.cancel_add').click()
-        self.assertEqual(browser.url, 'http://nohost/plone/@@manage-portlets')
